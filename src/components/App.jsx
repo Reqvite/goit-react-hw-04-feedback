@@ -1,4 +1,3 @@
-import { Component } from 'react';
 import { ThemeProvider } from 'styled-components'
 import { theme } from 'theme/theme';
 
@@ -8,39 +7,40 @@ import { Section } from './Section/Section';
 import { FeedbackOptions } from './FeedbackOptions/FeedbackOptions'
 import { Statistics } from './Statistics/Statistics';
 import { Notification } from './Notification/Notification';
+import { useState } from 'react';
 
-export class App extends Component{
-  state = {
-  good: 0,
-  neutral: 0,
-  bad: 0
+
+export const App = () => {
+  const [good, setGood] = useState(0);
+  const [neutral, setNeutral] = useState(0);
+  const [bad, setBad] = useState(0);
+
+  const options = Object.keys({ good, neutral, bad });
+  
+ const handleBtn = e => {
+    const { name} = e.target;
+    switch (name) {
+      case 'good':
+        setGood(value => value + 1);
+        break;
+      case 'neutral':
+        setNeutral(value => value + 1);
+        break;  
+      case 'bad':
+        setBad(value => value + 1);
+        break;
+      default:
+        return
+    }
   }
 
-  handleBtn = e => {
-    const { name } = e.target;
-    this.setState(pS => ({
-      [name]: pS[name] + 1 
-    }))
-  }
-
-  countTotalFeedback = () => {
-    const { good, neutral, bad } = this.state;
-    const total = good + neutral + bad
-    return total;
-  }
-
-  countPositiveFeedbackPercentage = (total) => {
-    return Math.round((this.state.good * 100) / total);
-  }
-
-  render() {
-    const { good, neutral, bad } = this.state;
-    const total = this.countTotalFeedback();
-    const positivePersantage = this.countPositiveFeedbackPercentage(total);
-    return <ThemeProvider theme={theme}>
+const total = good + neutral + bad
+const positivePersantage = Math.round((good * 100) / total);
+  
+  return (  <ThemeProvider theme={theme}>
       <Container display="flex" flexDirection="column" alignItems="center" padding="3">
-        <Section title='Please leave feedback'>
-        <FeedbackOptions options={Object.keys(this.state)} onLeaveFeedback={this.handleBtn} />
+      <Section  title='Please leave feedback'>
+        <FeedbackOptions options={options} onLeaveFeedback={handleBtn} />
         </Section>
         <Section title='Statistic'>
           {total > 0
@@ -54,7 +54,6 @@ export class App extends Component{
           }
           </Section>
        </Container>
-      </ThemeProvider>
-  }
-  
-};
+</ThemeProvider>
+      ) 
+ }  
